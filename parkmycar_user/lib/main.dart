@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:parkmycar_client_repo/parkmycar_http_repo.dart';
+import 'package:parkmycar_user/globals.dart';
+import 'package:parkmycar_user/screens/login_screen.dart';
 import '/screens/main_screen.dart';
 
-void main() async {
-  //runApp(const ParkMyCarApp());
-
-  var persons = await PersonHttpRepository.instance.getAll();
-  print(persons);
+void main() {
+  runApp(const ParkMyCarApp());
 }
 
 class ParkMyCarApp extends StatelessWidget {
@@ -32,7 +30,7 @@ class ParkMyCarApp extends StatelessWidget {
       // theme: ThemeData(
       //     useMaterial3: true,
       //     colorSchemeSeed: Color.fromRGBO(85, 234, 242, 1.0)),
-      home: const MainScreen(),
+      home: (isLoggedIn) ? MainScreen() : LoginScreen(),
     );
   }
 }

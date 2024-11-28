@@ -11,19 +11,21 @@ class Person extends Identifiable {
   int id; // Gör en override för att det ska funka med ObjectBox
 
   String name;
-  String personnr;
+
+  @Unique()
+  String email;
 
   /// Default constructor. Exclude id if this is a new object
-  Person(this.name, this.personnr, [this.id = -1]);
+  Person(this.name, this.email, [this.id = -1]);
 
   @override
   bool isValid() {
-    return Validators.isValidName(name) && Validators.isValidPersonNr(personnr);
+    return Validators.isValidName(name) && Validators.isValidEmail(email);
   }
 
   @override
   String toString() {
-    return "Id: $id, Namn: $name, Personnr: $personnr";
+    return "Id: $id, Namn: $name, E-post: $email";
   }
 }
 
@@ -32,8 +34,8 @@ class PersonSerializer extends Serializer<Person> {
   Map<String, dynamic> toJson(Person item) {
     return {
       'id': item.id,
+      'email': item.email,
       'name': item.name,
-      'personnr': item.personnr,
     };
   }
 
@@ -41,7 +43,7 @@ class PersonSerializer extends Serializer<Person> {
   Person fromJson(Map<String, dynamic> json) {
     return Person(
       json['name'] as String,
-      json['personnr'] as String,
+      json['email'] as String,
       json['id'] as int,
     );
   }

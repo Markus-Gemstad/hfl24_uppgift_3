@@ -46,33 +46,35 @@ class _MainScreenState extends State<MainScreen> {
             selectedIcon: Icon(Icons.person),
             label: 'Konto',
           ),
-          NavigationDestination(
-            icon: Icon(Icons.logout),
-            label: 'Logga ut',
-          ),
+          // NavigationDestination(
+          //   icon: Icon(Icons.logout),
+          //   label: 'Logga ut',
+          // ),
         ],
       ),
-      body: <Widget>[
-        ParkingScreen(),
-        VehicleScreen(),
-        HistoryScreen(),
-        AccountScreen(),
-        Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Är du säker på att du vill logga ut?'),
-              ),
-              ElevatedButton(
-                child: const Text('Logga ut'),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
+      body: SafeArea(
+        child: <Widget>[
+          ParkingScreen(),
+          VehicleScreen(),
+          HistoryScreen(),
+          AccountScreen(),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('Är du säker på att du vill logga ut?'),
+                ),
+                // ElevatedButton(
+                //   child: const Text('Logga ut'),
+                //   onPressed: () => Navigator.pop(context),
+                // ),
+              ],
+            ),
           ),
-        ),
-      ][_currentPageIndex],
+        ][_currentPageIndex],
+      ),
     );
   }
 }

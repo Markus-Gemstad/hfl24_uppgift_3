@@ -3,17 +3,20 @@ import 'package:http/http.dart';
 import 'package:parkmycar_shared/parkmycar_shared.dart';
 import 'package:test/test.dart';
 import 'parking_space_tests.dart';
+import 'person_tests.dart';
 import 'server_test.dart';
 import 'vehicle_tests.dart';
 
 int newParkingId = -1;
 
 parkingCreateTest() async {
+  int personId = newPersonId;
   int vehicleId = newVehicleId;
   int parkingSpaceId = newParkingSpaceId;
   DateTime startTime = DateTime.now();
   DateTime endTime = DateTime.now().add(const Duration(hours: 1));
-  Parking item = Parking(vehicleId, parkingSpaceId, startTime, endTime);
+  Parking item =
+      Parking(personId, vehicleId, parkingSpaceId, startTime, endTime, 99);
   expect(item.isValid(), true);
 
   final response = await post(Uri.parse('$host/parkings'),
@@ -28,6 +31,7 @@ parkingCreateTest() async {
 
   item = ParkingSerializer().fromJson(json);
   expect(item.id > 0, true);
+  expect(item.personId, personId);
   expect(item.vehicleId, vehicleId);
   expect(item.parkingSpaceId, parkingSpaceId);
   expect(item.startTime, startTime);
@@ -67,12 +71,13 @@ parkingGetByIdTest() async {
 }
 
 parkingUpdateTest() async {
+  int personId = newPersonId;
   int vehicleId = newVehicleId;
   int parkingSpaceId = newParkingSpaceId;
   DateTime startTime = DateTime.now();
   DateTime endTime = DateTime.now().add(const Duration(hours: 2));
-  Parking item =
-      Parking(vehicleId, parkingSpaceId, startTime, endTime, newParkingId);
+  Parking item = Parking(
+      personId, vehicleId, parkingSpaceId, startTime, endTime, newParkingId);
   expect(item.isValid(), true);
 
   final response = await put(Uri.parse('$host/parkings'),
@@ -88,6 +93,7 @@ parkingUpdateTest() async {
   item = ParkingSerializer().fromJson(json);
   expect(item.isValid(), true);
   expect(item.id, newParkingId);
+  expect(item.personId, personId);
   expect(item.vehicleId, vehicleId);
   expect(item.parkingSpaceId, parkingSpaceId);
   expect(item.startTime, startTime);

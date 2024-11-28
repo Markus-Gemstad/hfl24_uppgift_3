@@ -8,8 +8,8 @@ int newPersonId = -1;
 
 personCreateTest() async {
   String name = 'Testare Test';
-  String pnr = '199901010101';
-  Person item = Person(name, pnr);
+  String email = 'test@test.se';
+  Person item = Person(name, email);
   expect(item.isValid(), true);
 
   final response = await post(Uri.parse('$host/persons'),
@@ -25,7 +25,7 @@ personCreateTest() async {
   item = PersonSerializer().fromJson(json);
   expect(item.id > 0, true);
   expect(item.name, name);
-  expect(item.personnr, pnr);
+  expect(item.email, email);
 
   newPersonId = item.id;
 }
@@ -62,8 +62,8 @@ personGetByIdTest() async {
 
 personUpdateTest() async {
   String name = 'Testare Test uppdaterad';
-  String pnr = '200001010101';
-  Person item = Person(name, pnr, newPersonId);
+  String email = 'test@test.se';
+  Person item = Person(name, email, newPersonId);
   expect(item.isValid(), true);
 
   final response = await put(Uri.parse('$host/persons'),
@@ -80,7 +80,7 @@ personUpdateTest() async {
   expect(item.isValid(), true);
   expect(item.id, newPersonId);
   expect(item.name, name);
-  expect(item.personnr, pnr);
+  expect(item.email, email);
 }
 
 personDeleteTest() async {

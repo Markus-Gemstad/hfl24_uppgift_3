@@ -31,6 +31,7 @@ class ServerConfig {
     // /persons	            GET	    Hämta alla personer	getAll()
     // /persons	            POST	  Skapa ny person	create()
     // /persons/<id>	      GET	    Hämta specifik person	getById()
+    // /persons/<email>     GET     Hämta specifik person getByEmail()
     // /persons     	      PUT	    Uppdatera specifik person	update()
     // /persons/<id>	      DELETE	Ta bort specifik person	delete()
     // /vehicles	          GET	    Hämta alla fordon	getAll()

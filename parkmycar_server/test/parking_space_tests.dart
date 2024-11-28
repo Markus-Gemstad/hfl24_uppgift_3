@@ -7,9 +7,12 @@ import 'server_test.dart';
 int newParkingSpaceId = -1;
 
 parkingSpaceCreateTest() async {
-  String address = 'Gatan 10, 534 55 Orten';
+  String streetAddress = 'Gatan 10';
+  String postalCode = '534 55';
+  String city = 'Orten';
   int pricePerHour = 30;
-  ParkingSpace item = ParkingSpace(address, pricePerHour);
+  ParkingSpace item =
+      ParkingSpace(streetAddress, postalCode, city, pricePerHour);
   expect(item.isValid(), true);
 
   final response = await post(Uri.parse('$host/parkingspaces'),
@@ -24,7 +27,9 @@ parkingSpaceCreateTest() async {
 
   item = ParkingSpaceSerializer().fromJson(json);
   expect(item.id > 0, true);
-  expect(item.address, address);
+  expect(item.streetAddress, streetAddress);
+  expect(item.postalCode, postalCode);
+  expect(item.city, city);
   expect(item.pricePerHour, pricePerHour);
 
   newParkingSpaceId = item.id;
@@ -62,9 +67,12 @@ parkingSpaceGetByIdTest() async {
 }
 
 parkingSpaceUpdateTest() async {
-  String address = 'Nygatan 20, 666 66 Nystan';
+  String streetAddress = 'Nygatan 20';
+  String postalCode = '666 66';
+  String city = 'Nystan';
   int pricePerHour = 40;
-  ParkingSpace item = ParkingSpace(address, pricePerHour, newParkingSpaceId);
+  ParkingSpace item = ParkingSpace(
+      streetAddress, postalCode, city, pricePerHour, newParkingSpaceId);
   expect(item.isValid(), true);
 
   final response = await put(Uri.parse('$host/parkingspaces'),
@@ -80,7 +88,9 @@ parkingSpaceUpdateTest() async {
   item = ParkingSpaceSerializer().fromJson(json);
   expect(item.isValid(), true);
   expect(item.id, newParkingSpaceId);
-  expect(item.address, address);
+  expect(item.streetAddress, streetAddress);
+  expect(item.postalCode, postalCode);
+  expect(item.city, city);
   expect(item.pricePerHour, pricePerHour);
 }
 

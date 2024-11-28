@@ -15,10 +15,10 @@ class Validators {
     return false;
   }
 
-  /// Valid value = "YYYYMMDD-NNNN"
-  static bool isValidPersonNr(String? value) {
+  /// Valid value is a valid email address
+  static bool isValidEmail(String? value) {
     if (value != null &&
-        RegExp(r'^(((([02468][048]|[13579][26])00|\d\d(0[48]|[2468][048]|[13579][26]))02[28]9)|(\d{4}((0[135789]|1[02])([06][1-9]|[1278]\d|[39][01])|(0[469]|11)([06][1-9]|[1278]\d|[39]0)|(02([06][1-9]|[17]\d|[28][0-8])))))\d{4}$')
+        RegExp(r'^[0-9a-zA-Z]+([0-9a-zA-Z]*[-._+])*[0-9a-zA-Z]+@[0-9a-zA-Z]+([-.][0-9a-zA-Z]+)*([0-9a-zA-Z]*[.])[a-zA-Z]{2,6}$')
             .hasMatch(value)) {
       return true;
     }
@@ -26,8 +26,24 @@ class Validators {
   }
 
   /// Valid value = string with minimum of 1 letter, max 1000
-  static bool isValidAddress(String? value) {
+  static bool isValidStreetAddress(String? value) {
     if (value != null && value.isNotEmpty && value.length <= 1000) {
+      return true;
+    }
+    return false;
+  }
+
+  /// Validate if a String? contains a valid number for Swedish postal code. Valid format is nnn nn.
+  static bool isValidPostalCode(String? value) {
+    if (value != null && RegExp(r'^[0-9]{3}\s?[0-9]{2}$').hasMatch(value)) {
+      return true;
+    }
+    return false;
+  }
+
+  /// Valid value = string with minimum of 1 letter, max 100
+  static bool isValidCity(String? value) {
+    if (value != null && value.isNotEmpty && value.length <= 100) {
       return true;
     }
     return false;

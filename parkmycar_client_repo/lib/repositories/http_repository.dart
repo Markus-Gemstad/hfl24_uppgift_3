@@ -1,21 +1,32 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 import 'package:parkmycar_shared/parkmycar_shared.dart';
 
 abstract class HttpRepository<T> implements RepositoryInterface<T> {
-  final String host;
+  String? host;
   final String port;
   final String resource;
   Serializer<T> serializer;
 
-  Uri get baseUri => Uri.parse("$host:$port/$resource");
+  String get defaultHost {
+    if (Platform.isAndroid) {
+      // använd 10.0.2.2 i Android simulator
+      return 'http://10.0.2.2';
+    }
+    return 'http://localhost';
+  }
+
+  Uri get baseUri {
+    if (host != null) {
+      return Uri.parse("$host:$port/$resource");
+    }
+    return Uri.parse("$defaultHost:$port/$resource");
+  }
 
   HttpRepository(
-      {required this.serializer,
-      required this.resource,
-      this.host = "http://localhost",
-      this.port = "8080"});
+      {required this.serializer, required this.resource, this.port = "8080"});
 
   Uri createUriWithId(int id) {
     return Uri.parse("$baseUri/$id");
@@ -91,7 +102,7 @@ abstract class HttpRepository<T> implements RepositoryInterface<T> {
   }
 
   @override
-  Future<List<T>> getAll() async {
+  Future<List<T>> getAll([int Function(T a, T b)? compare]) async {
     final response = await http.get(
       baseUri,
       headers: {'Content-Type': 'application/json'},
@@ -100,7 +111,12 @@ abstract class HttpRepository<T> implements RepositoryInterface<T> {
     if (response.statusCode == 200) {
       try {
         final json = jsonDecode(response.body);
-        return (json as List).map((item) => serializer.fromJson(item)).toList();
+        List<T> list =
+            (json as List).map((item) => serializer.fromJson(item)).toList();
+        if (compare != null) {
+          list.sort(compare);
+        }
+        return list;
       } catch (e) {
         throw Exception('Gick inte att läsa returdata.');
       }

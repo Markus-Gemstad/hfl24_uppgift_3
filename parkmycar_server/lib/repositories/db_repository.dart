@@ -23,8 +23,12 @@ class DbRepository<T extends Identifiable> implements RepositoryInterface<T> {
   }
 
   @override
-  Future<List<T>> getAll() async {
-    return box.getAll();
+  Future<List<T>> getAll([int Function(T a, T b)? compare]) async {
+    var list = box.getAll();
+    if(compare !=null) {
+      list.sort(compare);
+    }
+    return list;
   }
 
   @override

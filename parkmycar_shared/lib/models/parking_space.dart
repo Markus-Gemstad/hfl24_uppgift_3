@@ -10,39 +10,26 @@ class ParkingSpace extends Identifiable {
   // ignore: overridden_fields
   int id; // Gör en override för att det ska funka med ObjectBox
 
-  String address;
+  String streetAddress;
+  String postalCode;
+  String city;
   int pricePerHour;
 
-  // Getter for price per minute
-  double get pricePerMinute => pricePerHour / 60;
-
-  ParkingSpace(this.address, this.pricePerHour, [this.id = -1]);
+  ParkingSpace(
+      this.streetAddress, this.postalCode, this.city, this.pricePerHour,
+      [this.id = -1]);
 
   @override
   bool isValid() {
-    return (Validators.isValidAddress(address) &&
+    return (Validators.isValidStreetAddress(streetAddress) &&
+        Validators.isValidPostalCode(postalCode) &&
+        Validators.isValidCity(city) &&
         Validators.isValidPricePerHour(pricePerHour.toString()));
   }
 
   @override
   String toString() {
-    return "Id: $id, Address: $address, Pris per timme: $pricePerHour";
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'address': address,
-      'pricePerHour': pricePerHour,
-    };
-  }
-
-  factory ParkingSpace.fromJson(Map<String, dynamic> json) {
-    return ParkingSpace(
-      json['address'] as String,
-      json['pricePerHour'] as int,
-      json['id'] as int,
-    );
+    return "Id: $id, Gatuadress: $streetAddress, Postnr: $postalCode, Ort: $city, Pris per timme: $pricePerHour";
   }
 }
 
@@ -51,7 +38,9 @@ class ParkingSpaceSerializer extends Serializer<ParkingSpace> {
   Map<String, dynamic> toJson(ParkingSpace item) {
     return {
       'id': item.id,
-      'address': item.address,
+      'streetAddress': item.streetAddress,
+      'postalCode': item.postalCode,
+      'city': item.city,
       'pricePerHour': item.pricePerHour,
     };
   }
@@ -59,7 +48,9 @@ class ParkingSpaceSerializer extends Serializer<ParkingSpace> {
   @override
   ParkingSpace fromJson(Map<String, dynamic> json) {
     return ParkingSpace(
-      json['address'] as String,
+      json['streetAddress'] as String,
+      json['postalCode'] as String,
+      json['city'] as String,
       json['pricePerHour'] as int,
       json['id'] as int,
     );
