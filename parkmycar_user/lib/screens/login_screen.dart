@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:parkmycar_client_repo/parkmycar_http_repo.dart';
 import 'package:parkmycar_shared/parkmycar_shared.dart';
 import 'package:parkmycar_user/globals.dart';
-import 'package:parkmycar_user/screens/main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, required this.onLogin});
+
+  final Function() onLogin;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -13,6 +14,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final formKey = GlobalKey<FormState>();
+
   String? email;
 
   void saveForm(BuildContext context) async {
@@ -29,16 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (filtered.isNotEmpty) {
           currentPerson = filtered.first;
 
-          Navigator.push(
-            // ignore: use_build_context_synchronously
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) =>
-                  const MainScreen(),
-              transitionDuration: Duration.zero,
-              reverseTransitionDuration: Duration.zero,
-            ),
-          );
+          widget.onLogin();
         } else {
           // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(

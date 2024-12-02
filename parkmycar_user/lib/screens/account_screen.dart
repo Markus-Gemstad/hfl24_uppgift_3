@@ -72,12 +72,12 @@ class _AccountScreenState extends State<AccountScreen> {
                 child: const Text('Spara'),
                 onPressed: () async => saveForm(context),
               ),
-              SizedBox(height: 20),
-              ElevatedButton.icon(
-                icon: Icon(Icons.logout),
-                label: const Text('Logga ut'),
-                onPressed: () => Navigator.pop(context),
-              ),
+              // SizedBox(height: 20),
+              // ElevatedButton.icon(
+              //   icon: Icon(Icons.logout),
+              //   label: const Text('Logga ut'),
+              //   onPressed: () => Navigator.pop(context),
+              // ),
               Visibility(
                 visible: kDebugMode,
                 child: Column(
@@ -85,10 +85,10 @@ class _AccountScreenState extends State<AccountScreen> {
                     SizedBox(height: 20),
                     TextButton(
                         onPressed: () async => createBaseData,
-                        child: Text('Fyll på med basdata')),
+                        child: Text('DEBUG: Fyll på med basdata')),
                     TextButton(
                         onPressed: () async => createParkingSpaces,
-                        child: Text('Fyll på med parkeringsplatser')),
+                        child: Text('DEBUG: Fyll på med parkeringsplatser')),
                   ],
                 ),
               ),

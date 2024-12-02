@@ -15,16 +15,26 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Future<List<Parking>> getAllParkings() async {
     var items = await ParkingHttpRepository.instance
         .getAll((a, b) => b.startTime.compareTo(a.startTime));
+
     // TODO: Ersätt med bättre relationer mellan parkering och person
+    // Gör detta med nästa repo (firebase).
     items = items
         .where((element) =>
             !element.isOngoing && element.personId == currentPerson!.id)
         .toList();
 
+    for (var item in items) {
+      item.parkingSpace = await ParkingSpaceHttpRepository.instance
+          .getById(item.parkingSpaceId);
+    }
+
     // Added delay to demonstrate loading animation
     return Future.delayed(
         Duration(milliseconds: delayLoadInMilliseconds), () => items);
   }
+
+  // Text('${item.parkingSpace.streetAddress}\n'
+  //   '${item.parkingSpace.postalCode} ${item.parkingSpace.city}\n'
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +50,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   var item = snapshot.data![index];
                   return ListTile(
                       leading: Icon(Icons.local_parking, color: Colors.blue),
-                      //title: Text(item.endTime.toString()),
-                      subtitle: Text(
-                          // TODO: Lägga till adress
-                          'Start: ${dateTimeFormat.format(item.startTime)}\n'
-                          'Slut: ${dateTimeFormat.format(item.endTime)}\n'
-                          'Pris: ${item.totalCost} kr'));
+                      subtitle: Text('${item.parkingSpace!.streetAddress}, '
+                          '${item.parkingSpace!.postalCode} ${item.parkingSpace!.city}\n'
+                          'Tid: ${dateTimeFormatShort.format(item.startTime)} - '
+                          '${dateTimeFormatShort.format(item.endTime)}\n'
+                          'Pris: ${item.totalCost} kr (${item.totalTimeToString(true)})'));
                 },
               );
             }

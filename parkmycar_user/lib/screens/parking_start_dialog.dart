@@ -36,7 +36,7 @@ class _ParkingStartDialogState extends State<ParkingStartDialog> {
         automaticallyImplyLeading: false,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.close),
+          icon: const Icon(Icons.arrow_back),
         ),
       ),
       body: Padding(
@@ -62,7 +62,7 @@ class _ParkingStartDialogState extends State<ParkingStartDialog> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '${_selectedEndTime.hour}:${_selectedEndTime.minute}',
+                    timeOnlyFormat.format(_selectedEndTime),
                     style: TextStyle(fontSize: 18),
                   ),
                   const SizedBox(width: 20),
@@ -88,7 +88,7 @@ class _ParkingStartDialogState extends State<ParkingStartDialog> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '${_selectedEndTime.year}-${_selectedEndTime.month}-${_selectedEndTime.day}',
+                    dateFormat.format(_selectedEndTime),
                     style: TextStyle(fontSize: 18),
                   ),
                   const SizedBox(width: 20),

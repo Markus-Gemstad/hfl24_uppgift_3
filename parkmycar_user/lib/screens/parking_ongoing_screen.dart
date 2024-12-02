@@ -13,21 +13,31 @@ class ParkingOngoingScreen extends StatefulWidget {
 }
 
 class _ParkingOngoingScreenState extends State<ParkingOngoingScreen> {
-  late Timer _timer;
+  Timer? _timer;
+  String overdueWarning = '';
 
   void startTimer() {
     const oneSec = Duration(seconds: 1);
     _timer = Timer.periodic(
       oneSec,
       (Timer timer) {
-        setState(() {});
+        setState(() {
+          if (ongoingParking!.isOverdue) {
+            overdueWarning = 'OBS! Din parkeringstid har gått ut!';
+          }
+        });
       },
     );
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     startTimer();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     ParkingSpace parkingSpace = currentParkingSpace!;
     return Scaffold(
       appBar: AppBar(
@@ -63,6 +73,10 @@ class _ParkingOngoingScreenState extends State<ParkingOngoingScreen> {
                   style: TextStyle(fontSize: 20)),
               Text('Kostnad: ${ongoingParking!.elapsedCostToString()}',
                   style: TextStyle(fontSize: 20)),
+              Text(
+                overdueWarning,
+                style: TextStyle(fontSize: 16, color: Colors.red),
+              ),
               SizedBox(height: 20.0),
               ElevatedButton(
                 onPressed: () {
@@ -79,7 +93,9 @@ class _ParkingOngoingScreenState extends State<ParkingOngoingScreen> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    if (_timer?.isActive ?? false) {
+      _timer?.cancel();
+    }
     super.dispose();
   }
 }

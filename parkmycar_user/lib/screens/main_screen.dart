@@ -6,7 +6,9 @@ import 'package:parkmycar_user/screens/vehicle_screen.dart';
 import 'account_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  const MainScreen({super.key, required this.onLogout});
+
+  final Function() onLogout;
 
   @override
   State<StatefulWidget> createState() {
@@ -46,10 +48,10 @@ class _MainScreenState extends State<MainScreen> {
             selectedIcon: Icon(Icons.person),
             label: 'Konto',
           ),
-          // NavigationDestination(
-          //   icon: Icon(Icons.logout),
-          //   label: 'Logga ut',
-          // ),
+          NavigationDestination(
+            icon: Icon(Icons.logout),
+            label: 'Logga ut',
+          ),
         ],
       ),
       body: SafeArea(
@@ -66,10 +68,10 @@ class _MainScreenState extends State<MainScreen> {
                   padding: EdgeInsets.all(8.0),
                   child: Text('Är du säker på att du vill logga ut?'),
                 ),
-                // ElevatedButton(
-                //   child: const Text('Logga ut'),
-                //   onPressed: () => Navigator.pop(context),
-                // ),
+                ElevatedButton(
+                  onPressed: widget.onLogout,
+                  child: const Text('Logga ut'),
+                ),
               ],
             ),
           ),
