@@ -92,6 +92,15 @@ class _VehicleScreenState extends State<VehicleScreen> {
             future: getAllVehicles(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
+                if (snapshot.data!.isEmpty) {
+                  return SizedBox.expand(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text('Finns inga fordon.'),
+                    ),
+                  );
+                }
+
                 return ListView.builder(
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {

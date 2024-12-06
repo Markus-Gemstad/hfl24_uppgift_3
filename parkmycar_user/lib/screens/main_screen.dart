@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:parkmycar_user/screens/history_screen.dart';
-import 'package:parkmycar_user/screens/parking_screen.dart';
-import 'package:parkmycar_user/screens/vehicle_screen.dart';
+import 'package:parkmycar_client_repo/parkmycar_client_stuff.dart';
 
-import 'account_screen.dart';
+import 'history_screen.dart';
+import 'parking_screen.dart';
+import 'vehicle_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key, required this.onLogout});
-
-  final Function() onLogout;
+  const MainScreen({super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -17,7 +15,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentPageIndex = 0;
+  int _currentScreenIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +23,10 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
           setState(() {
-            _currentPageIndex = index;
+            _currentScreenIndex = index;
           });
         },
-        selectedIndex: _currentPageIndex,
+        selectedIndex: _currentScreenIndex,
         destinations: const <Widget>[
           NavigationDestination(
             icon: Icon(Icons.local_parking, color: Colors.blue),
@@ -60,22 +58,8 @@ class _MainScreenState extends State<MainScreen> {
           VehicleScreen(),
           HistoryScreen(),
           AccountScreen(),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('Är du säker på att du vill logga ut?'),
-                ),
-                ElevatedButton(
-                  onPressed: widget.onLogout,
-                  child: const Text('Logga ut'),
-                ),
-              ],
-            ),
-          ),
-        ][_currentPageIndex],
+          LogoutScreen(),
+        ][_currentScreenIndex],
       ),
     );
   }

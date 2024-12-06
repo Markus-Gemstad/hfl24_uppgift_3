@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:parkmycar_user/screens/login_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:parkmycar_client_repo/parkmycar_client_stuff.dart';
 import '/screens/main_screen.dart';
 
 void main() {
-  runApp(const ParkMyCarApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => AuthService(),
+      child: const ParkMyCarApp(),
+    ),
+  );
 }
 
 class ParkMyCarApp extends StatelessWidget {
@@ -29,46 +35,23 @@ class ParkMyCarApp extends StatelessWidget {
       // theme: ThemeData(
       //     useMaterial3: true,
       //     colorSchemeSeed: Color.fromRGBO(85, 234, 242, 1.0)),
-      home: AuthViewSwitcher(),
-      // home: MainScreen(
-      //   onLogout: () {},
-      // ),
+      home: const AuthViewSwitcher(),
     );
   }
 }
 
 class AuthViewSwitcher extends StatelessWidget {
-  AuthViewSwitcher({super.key});
-
-  final _isLoggedIn = ValueNotifier<bool>(false);
+  const AuthViewSwitcher({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ValueListenableBuilder<bool>(
-          valueListenable: _isLoggedIn,
-          builder: (context, isLoggedIn, child) {
-            return AnimatedSwitcher(
-                duration: Duration(milliseconds: 250),
-                // switchInCurve: Curves.easeOut,
-                // switchOutCurve: Curves.easeOut,
-                // transitionBuilder: (child, animation) {
-                //   return SlideTransition(
-                //     position: Tween<Offset>(
-                //       begin: const Offset(0, 1),
-                //       end: Offset.zero,
-                //     ).animate(animation),
-                //     child: child,
-                //   );
-                // },
-                child: isLoggedIn
-                    ? MainScreen(
-                        onLogout: () => _isLoggedIn.value = false,
-                      )
-                    : LoginScreen(
-                        onLogin: () => _isLoggedIn.value = true,
-                      ));
-          }),
+    final authStatus = context.watch<AuthService>().status;
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 250),
+      child: authStatus == AuthStatus.authenticated
+          ? const MainScreen()
+          : const LoginScreen(title: 'ParkMyCar'),
     );
   }
 }

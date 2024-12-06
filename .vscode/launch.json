@@ -1,25 +1,31 @@
 {
   "configurations": [
     {
-      "name": "ParkMyCar main",
+      "name": "ParkMyCar user debug",
       "type": "dart",
       "request": "launch",
       "program": "parkmycar_user/lib/main.dart",
     },
     {
-      "name": "ParkMyCar release",
+      "name": "ParkMyCar user release",
       "type": "dart",
       "request": "launch",
       "program": "parkmycar_user/lib/main.dart",
       "flutterMode": "release"
     },
     {
-      "name": "ParkMyCar profile",
+      "name": "ParkMyCar user profile",
       "type": "dart",
       "request": "launch",
       "cwd": "parkmycar_user",
       "program": "parkmycar_user/lib/main.dart",
       "flutterMode": "profile"
-    }
+    },
+    {
+      "name": "ParkMyCar admin debug",
+      "type": "dart",
+      "request": "launch",
+      "program": "parkmycar_admin/lib/main.dart",
+    },
   ]
 }

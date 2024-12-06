@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:parkmycar_client_repo/parkmycar_client_stuff.dart';
 import 'package:parkmycar_client_repo/parkmycar_http_repo.dart';
 import 'package:parkmycar_shared/parkmycar_shared.dart';
 import 'package:parkmycar_user/globals.dart';
+import 'package:provider/provider.dart';
 
 class ParkingStartDialog extends StatefulWidget {
   const ParkingStartDialog(this.parkingSpace, {super.key});
@@ -29,6 +31,8 @@ class _ParkingStartDialogState extends State<ParkingStartDialog> {
 
   @override
   Widget build(BuildContext context) {
+    Person? currentPerson = context.read<AuthService>().currentPerson;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Starta parkering'),
@@ -149,7 +153,7 @@ class _ParkingStartDialogState extends State<ParkingStartDialog> {
                 ],
               ),
               const SizedBox(height: 40),
-              ElevatedButton(
+              FilledButton(
                 child: Text('Starta parkering', style: TextStyle(fontSize: 24)),
                 onPressed: () async {
                   currentParkingSpace = parkingSpace;

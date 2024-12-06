@@ -1,100 +1,43 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:parkmycar_client_repo/parkmycar_http_repo.dart';
 import 'package:parkmycar_shared/parkmycar_shared.dart';
-import 'package:parkmycar_user/globals.dart';
 
-class AccountScreen extends StatefulWidget {
-  const AccountScreen({super.key});
+import '../services/auth_service.dart';
 
-  @override
-  State<AccountScreen> createState() => _AccountScreenState();
-}
-
-class _AccountScreenState extends State<AccountScreen> {
-  final formKey = GlobalKey<FormState>();
-  String? name;
-
-  void saveForm(BuildContext context) async {
-    if (formKey.currentState!.validate()) {
-      if (!mounted) return;
-
-      formKey.currentState!.save();
-
-      try {
-        currentPerson!.name = name!;
-        await PersonHttpRepository.instance.update(currentPerson!);
-
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Person uppdaterad!')));
-      } catch (e) {
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Person kunde inte sparas!')));
-      }
-    }
-  }
+class LogoutScreen extends StatelessWidget {
+  const LogoutScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(12.0),
-      child: Center(
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextFormField(
-                initialValue: currentPerson!.name,
-                maxLength: 255,
-                validator: (value) {
-                  if (!Validators.isValidName(value)) {
-                    return 'Ange ett giltigt namn.';
-                  }
-                  return null;
-                },
-                onFieldSubmitted: (_) => saveForm(context),
-                onSaved: (newValue) => name = newValue,
-                decoration: const InputDecoration(
-                    border: UnderlineInputBorder(), labelText: 'Namn'),
-              ),
-              TextFormField(
-                initialValue: currentPerson!.email,
-                readOnly: true,
-                decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: 'E-post (går inte att ändra)'),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                child: const Text('Spara'),
-                onPressed: () async => saveForm(context),
-              ),
-              // SizedBox(height: 20),
-              // ElevatedButton.icon(
-              //   icon: Icon(Icons.logout),
-              //   label: const Text('Logga ut'),
-              //   onPressed: () => Navigator.pop(context),
-              // ),
-              Visibility(
-                visible: kDebugMode,
-                child: Column(
-                  children: [
-                    SizedBox(height: 20),
-                    TextButton(
-                        onPressed: () async => createBaseData,
-                        child: Text('DEBUG: Fyll på med basdata')),
-                    TextButton(
-                        onPressed: () async => createParkingSpaces,
-                        child: Text('DEBUG: Fyll på med parkeringsplatser')),
-                  ],
-                ),
-              ),
-            ],
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text('Är du säker på att du vill logga ut?'),
           ),
-        ),
+          FilledButton(
+            onPressed: () => context.read<AuthService>().logout(),
+            child: const Text('Logga ut'),
+          ),
+          Visibility(
+            visible: kDebugMode,
+            child: Column(
+              children: [
+                SizedBox(height: 20),
+                TextButton(
+                    onPressed: () async => createBaseData,
+                    child: Text('DEBUG: Fyll på med basdata')),
+                TextButton(
+                    onPressed: () async => createParkingSpaces,
+                    child: Text('DEBUG: Fyll på med parkeringsplatser')),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:parkmycar_client_repo/parkmycar_http_repo.dart';
 import 'package:parkmycar_shared/parkmycar_shared.dart';
-import 'package:parkmycar_user/globals.dart';
-import 'package:parkmycar_user/screens/parking_ongoing_screen.dart';
-import 'package:parkmycar_user/screens/parking_start_dialog.dart';
+import '../globals.dart';
+import 'parking_ongoing_screen.dart';
+import 'parking_start_dialog.dart';
 
 class ParkingScreen extends StatefulWidget {
   const ParkingScreen({super.key});
@@ -15,7 +15,6 @@ class ParkingScreen extends StatefulWidget {
 
 class _ParkingScreenState extends State<ParkingScreen> {
   late TextEditingController _searchController;
-  late TextEditingController _controller;
   late Future<List<ParkingSpace>> allItems;
 
   @override
@@ -26,7 +25,6 @@ class _ParkingScreenState extends State<ParkingScreen> {
 
     _searchController = TextEditingController();
     _searchController.addListener(_queryListener);
-    _controller = TextEditingController();
   }
 
   void _queryListener() {
@@ -99,6 +97,13 @@ class _ParkingScreenState extends State<ParkingScreen> {
   }
 
   @override
+  void dispose() {
+    _searchController.removeListener(_queryListener);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     timeDilation = 2.0;
     return (parkingIsOngoing && ongoingParking != null)
@@ -126,6 +131,15 @@ class _ParkingScreenState extends State<ParkingScreen> {
                       future: allItems,
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
+                          if (snapshot.data!.isEmpty) {
+                            return SizedBox.expand(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Text('Finns inga parkeringsplatser.'),
+                              ),
+                            );
+                          }
+
                           return ListView.builder(
                               itemCount: snapshot.data!.length,
                               itemBuilder: (context, index) {
@@ -183,13 +197,5 @@ class _ParkingScreenState extends State<ParkingScreen> {
               ],
             ),
           );
-  }
-
-  @override
-  void dispose() {
-    _searchController.removeListener(_queryListener);
-    _controller.dispose();
-    _searchController.dispose();
-    super.dispose();
   }
 }

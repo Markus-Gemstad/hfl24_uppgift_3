@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:parkmycar_client_repo/parkmycar_client_stuff.dart';
 import 'package:parkmycar_client_repo/parkmycar_http_repo.dart';
 import 'package:parkmycar_shared/parkmycar_shared.dart';
+import 'package:provider/provider.dart';
 
 import '../globals.dart';
 
@@ -12,20 +14,38 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  Future<List<Parking>> getAllParkings() async {
+  Future<List<Parking>> getAllParkings(BuildContext context) async {
     var items = await ParkingHttpRepository.instance
         .getAll((a, b) => b.startTime.compareTo(a.startTime));
 
-    // TODO: Ersätt med bättre relationer mellan parkering och person
-    // Gör detta med nästa repo (firebase).
-    items = items
-        .where((element) =>
-            !element.isOngoing && element.personId == currentPerson!.id)
-        .toList();
+    if (context.mounted) {
+      // ignore: use_build_context_synchronously
+      Person? currentPerson = context.read<AuthService>().currentPerson;
 
-    for (var item in items) {
-      item.parkingSpace = await ParkingSpaceHttpRepository.instance
-          .getById(item.parkingSpaceId);
+      // TODO: Ersätt med bättre relationer mellan Parking och Person
+      items = items
+          .where((element) =>
+              !element.isOngoing && element.personId == currentPerson!.id)
+          .toList();
+
+      List<Parking> removeItems = List.empty(growable: true);
+
+      for (var item in items) {
+        // TODO: Ersätt med bättre relationer mellan Parking och ParkingSpace
+        try {
+          item.parkingSpace = await ParkingSpaceHttpRepository.instance
+              .getById(item.parkingSpaceId);
+        } catch (e) {
+          debugPrint('Error getting ParkingSpace:${item.parkingSpaceId}');
+          removeItems.add(item);
+        }
+      }
+
+      // Remove any items where a ParkingSpace was not found.
+      // Ugly handling of error with relations...
+      for (var item in removeItems) {
+        items.remove(item);
+      }
     }
 
     // Added delay to demonstrate loading animation
@@ -33,17 +53,23 @@ class _HistoryScreenState extends State<HistoryScreen> {
         Duration(milliseconds: delayLoadInMilliseconds), () => items);
   }
 
-  // Text('${item.parkingSpace.streetAddress}\n'
-  //   '${item.parkingSpace.postalCode} ${item.parkingSpace.city}\n'
-
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(12.0),
       child: FutureBuilder<List<Parking>>(
-          future: getAllParkings(),
+          future: getAllParkings(context),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
+              if (snapshot.data!.isEmpty) {
+                return SizedBox.expand(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text('Finns ingen historik.'),
+                  ),
+                );
+              }
+
               return ListView.builder(
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
@@ -58,7 +84,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 },
               );
             }
-
             if (snapshot.hasError) {
               return Padding(
                 padding: const EdgeInsets.all(16.0),

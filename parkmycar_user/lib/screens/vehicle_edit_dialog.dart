@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:parkmycar_client_repo/parkmycar_client_stuff.dart';
 import 'package:parkmycar_shared/parkmycar_shared.dart';
-import 'package:parkmycar_user/globals.dart';
+import 'package:provider/provider.dart';
 
 class VehicleEditDialog extends StatefulWidget {
   const VehicleEditDialog({super.key, this.vehicle});
@@ -40,6 +41,8 @@ class _VehicleEditDialogState extends State<VehicleEditDialog> {
   void saveForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+
+      Person? currentPerson = context.read<AuthService>().currentPerson;
 
       if (isEditMode) {
         _vehicle = Vehicle(_regNr!, currentPerson!.id,
