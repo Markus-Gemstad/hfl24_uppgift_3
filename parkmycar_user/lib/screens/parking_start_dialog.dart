@@ -17,7 +17,7 @@ class ParkingStartDialog extends StatefulWidget {
 class _ParkingStartDialogState extends State<ParkingStartDialog> {
   late ParkingSpace parkingSpace;
   late int _selectedVehicleId;
-  DateTime _selectedEndTime = DateTime.now().add(Duration(minutes: 5));
+  DateTime _selectedEndTime = DateTime.now().add(Duration(hours: 1));
 
   Future<List<Vehicle>> getAllVehicles() async {
     return await VehicleHttpRepository.instance.getAll();
@@ -156,7 +156,6 @@ class _ParkingStartDialogState extends State<ParkingStartDialog> {
               FilledButton(
                 child: Text('Starta parkering', style: TextStyle(fontSize: 24)),
                 onPressed: () async {
-                  currentParkingSpace = parkingSpace;
                   Parking parking = Parking(
                       currentPerson!.id,
                       _selectedVehicleId,
@@ -164,6 +163,7 @@ class _ParkingStartDialogState extends State<ParkingStartDialog> {
                       DateTime.now(),
                       _selectedEndTime,
                       parkingSpace.pricePerHour);
+                  parking.parkingSpace = parkingSpace;
                   Navigator.of(context).pop(parking);
                 },
               ),

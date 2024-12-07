@@ -20,7 +20,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
         Duration(milliseconds: delayLoadInMilliseconds), () => items);
   }
 
-  void updateVehicle(Vehicle vehicle) async {
+  Future<void> updateVehicle(Vehicle vehicle) async {
     String successMessage;
     try {
       if (vehicle.id > 0) {
@@ -46,7 +46,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
     }
   }
 
-  void removeVehicle(Vehicle item) async {
+  Future<void> removeVehicle(Vehicle item) async {
     try {
       await VehicleHttpRepository.instance.delete(item.id);
 
@@ -86,71 +86,69 @@ class _VehicleScreenState extends State<VehicleScreen> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: FutureBuilder<List<Vehicle>>(
-            future: getAllVehicles(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data!.isEmpty) {
-                  return SizedBox.expand(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text('Finns inga fordon.'),
+      FutureBuilder<List<Vehicle>>(
+          future: getAllVehicles(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              if (snapshot.data!.isEmpty) {
+                return SizedBox.expand(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text('Finns inga fordon.'),
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(12.0),
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  Vehicle item = snapshot.data![index];
+                  return ListTile(
+                    leading: Icon(Icons.directions_car),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () async {
+                              Vehicle? vehicle = await showDialog<Vehicle>(
+                                context: context,
+                                builder: (context) =>
+                                    VehicleEditDialog(vehicle: item),
+                              );
+
+                              debugPrint(vehicle.toString());
+
+                              if (vehicle != null && vehicle.isValid()) {
+                                await updateVehicle(vehicle);
+                              }
+                            }),
+                        IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () async {
+                              var delete = await showDeleteDialog(item);
+                              if (delete == true) {
+                                await removeVehicle(item);
+                              }
+                            }),
+                      ],
                     ),
+                    title: Text(item.regNr),
                   );
-                }
+                },
+              );
+            }
 
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    Vehicle item = snapshot.data![index];
-                    return ListTile(
-                      leading: Icon(Icons.directions_car),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () async {
-                                Vehicle? vehicle = await showDialog<Vehicle>(
-                                  context: context,
-                                  builder: (context) =>
-                                      VehicleEditDialog(vehicle: item),
-                                );
+            if (snapshot.hasError) {
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text('Error: ${snapshot.error}'),
+              );
+            }
 
-                                debugPrint(vehicle.toString());
-
-                                if (vehicle != null && vehicle.isValid()) {
-                                  updateVehicle(vehicle);
-                                }
-                              }),
-                          IconButton(
-                              icon: Icon(Icons.delete),
-                              onPressed: () async {
-                                var delete = await showDeleteDialog(item);
-                                if (delete == true) {
-                                  removeVehicle(item);
-                                }
-                              }),
-                        ],
-                      ),
-                      title: Text(item.regNr),
-                    );
-                  },
-                );
-              }
-
-              if (snapshot.hasError) {
-                return Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text('Error: ${snapshot.error}'),
-                );
-              }
-
-              return Center(child: CircularProgressIndicator());
-            }),
-      ),
+            return Center(child: CircularProgressIndicator());
+          }),
       Positioned(
           bottom: 16,
           right: 16,
@@ -164,7 +162,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
               debugPrint(vehicle.toString());
 
               if (vehicle != null && vehicle.isValid()) {
-                updateVehicle(vehicle);
+                await updateVehicle(vehicle);
               }
             },
             child: Icon(Icons.add),

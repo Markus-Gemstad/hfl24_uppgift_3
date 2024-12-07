@@ -6,24 +6,29 @@ import 'screens/main_screen.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => AuthService(),
-      child: const ParkMyCarAdminApp(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => AuthService(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ThemeService(),
+        ),
+      ],
+      child: ParkMyCarAdminApp(),
     ),
   );
 }
 
 class ParkMyCarAdminApp extends StatelessWidget {
-  const ParkMyCarAdminApp({super.key, this.dark = false});
-
-  final bool dark;
+  const ParkMyCarAdminApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'ParkMyCar Admin',
       debugShowCheckedModeBanner: false,
-      themeMode: dark ? ThemeMode.dark : ThemeMode.light,
+      themeMode: Provider.of<ThemeService>(context).themeMode,
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.light,

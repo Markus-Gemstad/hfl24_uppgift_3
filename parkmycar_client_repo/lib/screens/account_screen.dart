@@ -117,6 +117,40 @@ class _AccountScreenState extends State<AccountScreen> {
                     ),
                   ],
                 ),
+                Text('Byt tema',
+                    style: Theme.of(context).textTheme.headlineSmall),
+                SizedBox(height: 10),
+                SegmentedButton<ThemeMode>(
+                  segments: [
+                    ButtonSegment<ThemeMode>(
+                      value: ThemeMode.light,
+                      icon: Icon(Icons.light_mode),
+                      label: Text('Ljust'),
+                    ),
+                    ButtonSegment<ThemeMode>(
+                      value: ThemeMode.dark,
+                      icon: Icon(Icons.dark_mode),
+                      label: Text('Mörkt'),
+                    ),
+                    ButtonSegment<ThemeMode>(
+                      value: ThemeMode.system,
+                      icon: Icon(Icons.auto_mode),
+                      label: Text('Auto'),
+                    ),
+                  ],
+                  selected: <ThemeMode>{
+                    Provider.of<ThemeService>(context).themeMode
+                  },
+                  onSelectionChanged: (p0) {
+                    Provider.of<ThemeService>(context, listen: false)
+                        .changeThemeMode(p0.first);
+                  },
+                )
+                // Switch(
+                //   value: true,
+                //   onChanged: Provider.of<ThemeService>(context)
+                //       .changeThemeMode(ThemeMode.dark),
+                // ),
               ],
             ),
           ),

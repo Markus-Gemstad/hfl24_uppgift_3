@@ -19,6 +19,14 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screens = <Widget>[
+      ParkingScreen(),
+      VehicleScreen(),
+      HistoryScreen(),
+      AccountScreen(),
+      LogoutScreen(),
+    ];
+
     return Scaffold(
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
@@ -53,13 +61,12 @@ class _MainScreenState extends State<MainScreen> {
         ],
       ),
       body: SafeArea(
-        child: <Widget>[
-          ParkingScreen(),
-          VehicleScreen(),
-          HistoryScreen(),
-          AccountScreen(),
-          LogoutScreen(),
-        ][_currentScreenIndex],
+        // child: screens[_currentScreenIndex],
+        child: IndexedStack(
+          key: const GlobalObjectKey('IndexedStack'),
+          index: _currentScreenIndex,
+          children: screens,
+        ),
       ),
     );
   }

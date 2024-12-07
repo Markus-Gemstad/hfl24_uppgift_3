@@ -31,7 +31,8 @@ class _ParkingSpaceScreenState extends State<ParkingSpaceScreen> {
   }
 
   Future<List<ParkingSpace>> getParkingSpaces([String? query]) async {
-    var items = await ParkingSpaceHttpRepository.instance.getAll();
+    var items = await ParkingSpaceHttpRepository.instance
+        .getAll((a, b) => a.streetAddress.compareTo(b.streetAddress));
     if (query != null) {
       items = items
           .where((e) =>
@@ -49,7 +50,7 @@ class _ParkingSpaceScreenState extends State<ParkingSpaceScreen> {
     });
   }
 
-  void updateParkingSpace(ParkingSpace parkingSpace) async {
+  Future<void> updateParkingSpace(ParkingSpace parkingSpace) async {
     String successMessage;
     try {
       if (parkingSpace.id > 0) {
@@ -128,11 +129,11 @@ class _ParkingSpaceScreenState extends State<ParkingSpaceScreen> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            children: [
-              SearchBar(
+        Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: SearchBar(
                 leading: const Icon(Icons.search),
                 // trailing: <Widget>[ // Use for clearing search
                 //   const Icon(Icons.close),
@@ -143,79 +144,78 @@ class _ParkingSpaceScreenState extends State<ParkingSpaceScreen> {
                 hintText: 'Sök gata...',
                 controller: _searchController,
               ),
-              SizedBox(height: 20.0),
-              Expanded(
-                child: FutureBuilder<List<ParkingSpace>>(
-                    future: allItems,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        if (snapshot.data!.isEmpty) {
-                          return SizedBox.expand(
-                            child: Text('Hittade inga parkeringsplatser.'),
-                          );
-                        }
-
-                        return ListView.builder(
-                            itemCount: snapshot.data!.length,
-                            itemBuilder: (context, index) {
-                              var item = snapshot.data![index];
-                              return ListTile(
-                                leading: Image.asset(
-                                  'assets/parking_icon.png',
-                                  width: 30.0,
-                                ),
-                                title: Text(item.streetAddress),
-                                subtitle: Text(
-                                    '${item.postalCode} ${item.city}\n'
-                                    'Pris per timme: ${item.pricePerHour} kr'),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                        icon: Icon(Icons.edit),
-                                        onPressed: () async {
-                                          ParkingSpace? updatedItem =
-                                              await showDialog<ParkingSpace>(
-                                            context: context,
-                                            builder: (context) =>
-                                                ParkingSpaceEditDialog(
-                                                    parkingSpace: item),
-                                          );
-
-                                          debugPrint(updatedItem.toString());
-
-                                          if (updatedItem != null &&
-                                              updatedItem.isValid()) {
-                                            updateParkingSpace(updatedItem);
-                                          }
-                                        }),
-                                    IconButton(
-                                        icon: Icon(Icons.delete),
-                                        onPressed: () async {
-                                          var delete =
-                                              await showDeleteDialog(item);
-                                          if (delete == true) {
-                                            removeParkingSpace(item);
-                                          }
-                                        }),
-                                  ],
-                                ),
-                              );
-                            });
-                      }
-
-                      if (snapshot.hasError) {
-                        return Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text('Error: ${snapshot.error}'),
+            ),
+            Expanded(
+              child: FutureBuilder<List<ParkingSpace>>(
+                  future: allItems,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      if (snapshot.data!.isEmpty) {
+                        return SizedBox.expand(
+                          child: Text('Hittade inga parkeringsplatser.'),
                         );
                       }
 
-                      return Center(child: CircularProgressIndicator());
-                    }),
-              ),
-            ],
-          ),
+                      return ListView.builder(
+                          padding: const EdgeInsets.all(12.0),
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (context, index) {
+                            var item = snapshot.data![index];
+                            return ListTile(
+                              leading: Image.asset(
+                                'assets/parking_icon.png',
+                                width: 30.0,
+                              ),
+                              title: Text(item.streetAddress),
+                              subtitle: Text('${item.postalCode} ${item.city}\n'
+                                  'Pris per timme: ${item.pricePerHour} kr'),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () async {
+                                        ParkingSpace? updatedItem =
+                                            await showDialog<ParkingSpace>(
+                                          context: context,
+                                          builder: (context) =>
+                                              ParkingSpaceEditDialog(
+                                                  parkingSpace: item),
+                                        );
+
+                                        debugPrint(updatedItem.toString());
+
+                                        if (updatedItem != null &&
+                                            updatedItem.isValid()) {
+                                          await updateParkingSpace(updatedItem);
+                                        }
+                                      }),
+                                  IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () async {
+                                        var delete =
+                                            await showDeleteDialog(item);
+                                        if (delete == true) {
+                                          removeParkingSpace(item);
+                                        }
+                                      }),
+                                ],
+                              ),
+                            );
+                          });
+                    }
+
+                    if (snapshot.hasError) {
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text('Error: ${snapshot.error}'),
+                      );
+                    }
+
+                    return Center(child: CircularProgressIndicator());
+                  }),
+            ),
+          ],
         ),
         Positioned(
             bottom: 16,
@@ -230,7 +230,7 @@ class _ParkingSpaceScreenState extends State<ParkingSpaceScreen> {
                 debugPrint(newItem.toString());
 
                 if (newItem != null && newItem.isValid()) {
-                  updateParkingSpace(newItem);
+                  await updateParkingSpace(newItem);
                 }
               },
               child: Icon(Icons.add),

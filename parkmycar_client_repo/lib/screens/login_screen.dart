@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:parkmycar_client_repo/screens/account_screen.dart';
-import 'package:parkmycar_client_repo/services/auth_service.dart';
-import 'package:parkmycar_shared/parkmycar_shared.dart';
 import 'package:provider/provider.dart';
+import 'package:parkmycar_shared/parkmycar_shared.dart';
+
+import 'account_screen.dart';
+import '../services/auth_service.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key, required this.title});
@@ -24,10 +25,11 @@ class LoginScreen extends StatelessWidget {
       });
     }
 
-    void login() async {
+    Future<void> login() async {
       if (formKey.currentState!.validate()) {
         formKey.currentState!.save();
-        AuthStatus authStatus = await context.read<AuthService>().login(email!);
+        AuthStatus authStatus =
+            await context.read<AuthService>().login(email!, admin: true);
 
         if (authStatus == AuthStatus.unauthenticated) {
           if (!context.mounted) return;
@@ -54,6 +56,7 @@ class LoginScreen extends StatelessWidget {
                 const SizedBox(height: 32),
                 TextFormField(
                   focusNode: usernameFocus,
+                  initialValue: 'markus@gemstad.se',
                   enabled: authService.status != AuthStatus.authenticating,
                   decoration: const InputDecoration(
                     labelText: 'E-postadress',

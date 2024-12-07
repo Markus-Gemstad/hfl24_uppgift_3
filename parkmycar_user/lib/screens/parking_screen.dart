@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:parkmycar_client_repo/parkmycar_client_stuff.dart';
 import 'package:parkmycar_client_repo/parkmycar_http_repo.dart';
 import 'package:parkmycar_shared/parkmycar_shared.dart';
+
 import '../globals.dart';
 import 'parking_ongoing_screen.dart';
 import 'parking_start_dialog.dart';
@@ -32,7 +34,8 @@ class _ParkingScreenState extends State<ParkingScreen> {
   }
 
   Future<List<ParkingSpace>> getParkingSpaces([String? query]) async {
-    var items = await ParkingSpaceHttpRepository.instance.getAll();
+    var items = await ParkingSpaceHttpRepository.instance
+        .getAll((a, b) => a.streetAddress.compareTo(b.streetAddress));
     if (query != null) {
       items = items
           .where((e) =>
@@ -50,12 +53,18 @@ class _ParkingScreenState extends State<ParkingScreen> {
     });
   }
 
-  void startParking(Parking parking) async {
+  Future<void> startParking(Parking parking) async {
     try {
       ongoingParking = await ParkingHttpRepository.instance.create(parking);
+
+      // Make sure the ongoingParking has the parkingSpace loaded
+      // (since it is not loaded on the db but recieved on the parking param,
+      // see ParkingStartDialog start parking button onPressed method)
+      ongoingParking!.parkingSpace = parking.parkingSpace;
+      // ongoingParking!.parkingSpace = await ParkingSpaceHttpRepository.instance
+      //     .getById(ongoingParking!.parkingSpaceId);
       debugPrint('Parking created: $parking');
 
-      // Use to avoid use_build_context_synchronously warning
       if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('En parkering har startats!')));
@@ -67,7 +76,7 @@ class _ParkingScreenState extends State<ParkingScreen> {
     }
 
     setState(() {
-      parkingIsOngoing = true;
+      isOngoingParking = true;
     });
   }
 
@@ -92,7 +101,7 @@ class _ParkingScreenState extends State<ParkingScreen> {
     }
 
     setState(() {
-      parkingIsOngoing = false;
+      isOngoingParking = false;
     });
   }
 
@@ -105,16 +114,18 @@ class _ParkingScreenState extends State<ParkingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    timeDilation = 2.0;
-    return (parkingIsOngoing && ongoingParking != null)
+    timeDilation = 2.0; // Make the animations go slower
+    debugPrint(
+        'ParkingScreen build() parkingIsOngoing: $isOngoingParking, ongoingParking: $ongoingParking');
+    return (isOngoingParking && ongoingParking != null)
         ? ParkingOngoingScreen(
             onEndParking: onEndParking,
           )
-        : Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              children: [
-                SearchBar(
+        : Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: SearchBar(
                   leading: const Icon(Icons.search),
                   // trailing: <Widget>[ // Use for clearing search
                   //   const Icon(Icons.close),
@@ -125,22 +136,29 @@ class _ParkingScreenState extends State<ParkingScreen> {
                   hintText: 'Sök gata...',
                   controller: _searchController,
                 ),
-                SizedBox(height: 20.0),
-                Expanded(
-                  child: FutureBuilder<List<ParkingSpace>>(
-                      future: allItems,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          if (snapshot.data!.isEmpty) {
-                            return SizedBox.expand(
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Text('Finns inga parkeringsplatser.'),
-                              ),
-                            );
-                          }
+              ),
+              Expanded(
+                child: FutureBuilder<List<ParkingSpace>>(
+                    future: allItems,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        if (snapshot.data!.isEmpty) {
+                          return SizedBox.expand(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text('Finns inga parkeringsplatser.'),
+                            ),
+                          );
+                        }
 
-                          return ListView.builder(
+                        return RefreshIndicator(
+                          onRefresh: () async {
+                            setState(() {
+                              allItems = getParkingSpaces();
+                            });
+                          },
+                          child: ListView.builder(
+                              padding: const EdgeInsets.all(12.0),
                               itemCount: snapshot.data!.length,
                               itemBuilder: (context, index) {
                                 var parkingSpace = snapshot.data![index];
@@ -166,7 +184,7 @@ class _ParkingScreenState extends State<ParkingScreen> {
                                     if (parking != null &&
                                         parking.isValid() &&
                                         context.mounted) {
-                                      startParking(parking);
+                                      await startParking(parking);
                                     }
                                   },
                                   leading: Hero(
@@ -181,21 +199,21 @@ class _ParkingScreenState extends State<ParkingScreen> {
                                       '${parkingSpace.postalCode} ${parkingSpace.city}\n'
                                       'Pris per timme: ${parkingSpace.pricePerHour} kr'),
                                 );
-                              });
-                        }
+                              }),
+                        );
+                      }
 
-                        if (snapshot.hasError) {
-                          return Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text('Error: ${snapshot.error}'),
-                          );
-                        }
+                      if (snapshot.hasError) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text('Error: ${snapshot.error}'),
+                        );
+                      }
 
-                        return Center(child: CircularProgressIndicator());
-                      }),
-                ),
-              ],
-            ),
+                      return Center(child: CircularProgressIndicator());
+                    }),
+              ),
+            ],
           );
   }
 }

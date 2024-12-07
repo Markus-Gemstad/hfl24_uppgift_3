@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:parkmycar_shared/parkmycar_shared.dart';
+import 'package:parkmycar_client_repo/parkmycar_client_stuff.dart';
+
 import 'package:parkmycar_user/globals.dart';
 
 class ParkingOngoingScreen extends StatefulWidget {
@@ -38,7 +39,6 @@ class _ParkingOngoingScreenState extends State<ParkingOngoingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ParkingSpace parkingSpace = currentParkingSpace!;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pågående parkering'),
@@ -52,16 +52,16 @@ class _ParkingOngoingScreenState extends State<ParkingOngoingScreen> {
             children: [
               ListTile(
                 leading: Hero(
-                  tag: 'parkingicon${parkingSpace.id}',
+                  tag: 'parkingicon${ongoingParking!.parkingSpace!.id}',
                   child: Image.asset(
                     'assets/parking_icon.png',
                     width: 60.0,
                   ),
                 ),
-                title: Text(parkingSpace.streetAddress),
-                subtitle:
-                    Text('${parkingSpace.postalCode} ${parkingSpace.city}\n'
-                        'Pris per timme: ${parkingSpace.pricePerHour} kr'),
+                title: Text(ongoingParking!.parkingSpace!.streetAddress),
+                subtitle: Text(
+                    '${ongoingParking!.parkingSpace!.postalCode} ${ongoingParking!.parkingSpace!.city}\n'
+                    'Pris per timme: ${ongoingParking!.parkingSpace!.pricePerHour} kr'),
               ),
               SizedBox(height: 20),
               Text(

@@ -101,6 +101,7 @@ abstract class HttpRepository<T> implements RepositoryInterface<T> {
     }
   }
 
+  /// Use compare to sort the list
   @override
   Future<List<T>> getAll([int Function(T a, T b)? compare]) async {
     final response = await http.get(

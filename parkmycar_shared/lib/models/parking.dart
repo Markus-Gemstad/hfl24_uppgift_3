@@ -25,7 +25,7 @@ class Parking extends Identifiable {
 
   // Can be set when loading parking spaces from the side.
   // Otherwise use the parkingSpaceId.
-  ParkingSpace? parkingSpace;
+ParkingSpace? parkingSpace;
 
   /// Get price per minute
   double get pricePerMinute => pricePerHour / 60;

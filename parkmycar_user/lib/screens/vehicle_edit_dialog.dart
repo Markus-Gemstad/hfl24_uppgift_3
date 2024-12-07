@@ -38,7 +38,7 @@ class _VehicleEditDialogState extends State<VehicleEditDialog> {
     });
   }
 
-  void saveForm(BuildContext context) async {
+  void saveForm(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
@@ -132,7 +132,7 @@ class _VehicleEditDialogState extends State<VehicleEditDialog> {
               onPressed: () => Navigator.pop(context),
               child: const Text("Avbryt")),
           TextButton(
-              onPressed: () async => saveForm(context),
+              onPressed: () => saveForm(context),
               child: const Text("Spara")),
         ],
       ),

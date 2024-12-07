@@ -1,27 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:parkmycar_client_repo/parkmycar_client_stuff.dart';
+
 import '/screens/main_screen.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => AuthService(),
-      child: const ParkMyCarApp(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => AuthService(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ThemeService(),
+        ),
+      ],
+      child: ParkMyCarApp(),
     ),
   );
 }
 
 class ParkMyCarApp extends StatelessWidget {
-  const ParkMyCarApp({super.key, this.dark = false});
-
-  final bool dark;
+  const ParkMyCarApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'ParkMyCar',
       debugShowCheckedModeBanner: false,
-      themeMode: dark ? ThemeMode.dark : ThemeMode.light,
+      themeMode: Provider.of<ThemeService>(context).themeMode,
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.light,
@@ -32,9 +39,6 @@ class ParkMyCarApp extends StatelessWidget {
         brightness: Brightness.dark,
         colorSchemeSeed: Color.fromRGBO(85, 234, 242, 1.0),
       ),
-      // theme: ThemeData(
-      //     useMaterial3: true,
-      //     colorSchemeSeed: Color.fromRGBO(85, 234, 242, 1.0)),
       home: const AuthViewSwitcher(),
     );
   }

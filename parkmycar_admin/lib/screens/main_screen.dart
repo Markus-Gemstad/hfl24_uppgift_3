@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:parkmycar_client_repo/parkmycar_client_stuff.dart';
+
 import 'parking_space_screen.dart';
+import 'statistics_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -14,16 +16,17 @@ class _MainScreenState extends State<MainScreen> {
 
   final destinations = const <NavigationDestination>[
     NavigationDestination(
-      icon: Icon(Icons.directions_car),
-      label: 'Platser',
-    ),
-    NavigationDestination(
       icon: Icon(Icons.local_parking),
       label: 'Parkeringar',
     ),
     NavigationDestination(
       icon: Icon(Icons.query_stats),
       label: 'Statistik',
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.person_outline),
+      selectedIcon: Icon(Icons.person),
+      label: 'Konto',
     ),
     NavigationDestination(
       icon: Icon(Icons.logout),
@@ -35,8 +38,8 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final screens = <Widget>[
       ParkingSpaceScreen(),
-      Placeholder(),
-      Placeholder(),
+      StatisticsScreen(),
+      AccountScreen(),
       LogoutScreen(),
     ];
 
@@ -53,6 +56,7 @@ class _MainScreenState extends State<MainScreen> {
               selectedIndex: _currentScreenIndex,
               destinations: destinations),
           body: SafeArea(
+            // child: screens[_currentScreenIndex],
             child: IndexedStack(
               key: const GlobalObjectKey('IndexedStack'),
               index: _currentScreenIndex,
@@ -78,6 +82,7 @@ class _MainScreenState extends State<MainScreen> {
                       .toList(),
                   selectedIndex: _currentScreenIndex),
               Expanded(
+                // child: screens[_currentScreenIndex],
                 child: IndexedStack(
                   key: const GlobalObjectKey('IndexedStack'),
                   index: _currentScreenIndex,

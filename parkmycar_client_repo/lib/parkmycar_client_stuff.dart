@@ -4,6 +4,7 @@
 library;
 
 export 'services/auth_service.dart';
+export 'services/theme_service.dart';
 export 'screens/login_screen.dart';
 export 'screens/logout_screen.dart';
 export 'screens/account_screen.dart';

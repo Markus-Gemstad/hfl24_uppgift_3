@@ -14,6 +14,8 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
+  late Future<List<Parking>> allParkings;
+
   Future<List<Parking>> getAllParkings(BuildContext context) async {
     var items = await ParkingHttpRepository.instance
         .getAll((a, b) => b.startTime.compareTo(a.startTime));
@@ -22,7 +24,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       // ignore: use_build_context_synchronously
       Person? currentPerson = context.read<AuthService>().currentPerson;
 
-      // TODO: Ersätt med bättre relationer mellan Parking och Person
+      // TODO Ersätt med bättre relationer mellan Parking och Person
       items = items
           .where((element) =>
               !element.isOngoing && element.personId == currentPerson!.id)
@@ -31,7 +33,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       List<Parking> removeItems = List.empty(growable: true);
 
       for (var item in items) {
-        // TODO: Ersätt med bättre relationer mellan Parking och ParkingSpace
+        // TODO Ersätt med bättre relationer mellan Parking och ParkingSpace
         try {
           item.parkingSpace = await ParkingSpaceHttpRepository.instance
               .getById(item.parkingSpaceId);
@@ -54,23 +56,35 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(12.0),
-      child: FutureBuilder<List<Parking>>(
-          future: getAllParkings(context),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              if (snapshot.data!.isEmpty) {
-                return SizedBox.expand(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text('Finns ingen historik.'),
-                  ),
-                );
-              }
+  void initState() {
+    super.initState();
 
-              return ListView.builder(
+    allParkings = getAllParkings(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Parking>>(
+        future: allParkings,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data!.isEmpty) {
+              return SizedBox.expand(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text('Finns ingen historik.'),
+                ),
+              );
+            }
+
+            return RefreshIndicator(
+              onRefresh: () async {
+                setState(() {
+                  allParkings = getAllParkings(context);
+                });
+              },
+              child: ListView.builder(
+                padding: EdgeInsets.all(12),
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
                   var item = snapshot.data![index];
@@ -82,17 +96,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           '${dateTimeFormatShort.format(item.endTime)}\n'
                           'Pris: ${item.totalCost} kr (${item.totalTimeToString(true)})'));
                 },
-              );
-            }
-            if (snapshot.hasError) {
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text('Error: ${snapshot.error}'),
-              );
-            }
+              ),
+            );
+          }
+          if (snapshot.hasError) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text('Error: ${snapshot.error}'),
+            );
+          }
 
-            return Center(child: CircularProgressIndicator());
-          }),
-    );
+          return Center(child: CircularProgressIndicator());
+        });
   }
 }
