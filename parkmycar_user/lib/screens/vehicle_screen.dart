@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:parkmycar_client_repo/parkmycar_client_stuff.dart';
 import 'package:parkmycar_client_repo/parkmycar_http_repo.dart';
 import 'package:parkmycar_shared/parkmycar_shared.dart';
 import 'package:parkmycar_user/screens/vehicle_edit_dialog.dart';
+import 'package:provider/provider.dart';
 
 import '../globals.dart';
 
@@ -14,7 +16,19 @@ class VehicleScreen extends StatefulWidget {
 
 class _VehicleScreenState extends State<VehicleScreen> {
   Future<List<Vehicle>> getAllVehicles() async {
-    var items = await VehicleHttpRepository.instance.getAll();
+    var items = await VehicleHttpRepository.instance
+        .getAll((a, b) => a.regNr.compareTo(b.regNr));
+
+    if (context.mounted) {
+      // ignore: use_build_context_synchronously
+      Person? currentPerson = context.read<AuthService>().currentPerson;
+
+      // TODO Ersätt med bättre relationer mellan Vehicle och Person
+      items = items
+          .where((element) => element.personId == currentPerson!.id)
+          .toList();
+    }
+
     // Added delay to demonstrate loading animation
     return Future.delayed(
         Duration(milliseconds: delayLoadInMilliseconds), () => items);

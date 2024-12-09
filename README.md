@@ -68,3 +68,4 @@ En parkeringsapp med tillhörande server-api (webservices) och admin-gui.
 
 - Statistiksidan är inte vacker men den gör det den ska.
 
+- parkmycar_client_repo skulle behöva byta namn då den innehåller mer delad klientfunktionalitet än repos.

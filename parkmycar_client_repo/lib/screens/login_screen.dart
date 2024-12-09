@@ -56,7 +56,8 @@ class LoginScreen extends StatelessWidget {
                 const SizedBox(height: 32),
                 TextFormField(
                   focusNode: usernameFocus,
-                  initialValue: 'markus@gemstad.se',
+                  autofocus: true,
+                  // initialValue: 'markus@gemstad.se',
                   enabled: authService.status != AuthStatus.authenticating,
                   decoration: const InputDecoration(
                     labelText: 'E-postadress',

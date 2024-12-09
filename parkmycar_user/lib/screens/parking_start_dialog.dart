@@ -20,7 +20,22 @@ class _ParkingStartDialogState extends State<ParkingStartDialog> {
   DateTime _selectedEndTime = DateTime.now().add(Duration(hours: 1));
 
   Future<List<Vehicle>> getAllVehicles() async {
-    return await VehicleHttpRepository.instance.getAll();
+    var items = await VehicleHttpRepository.instance
+        .getAll((a, b) => a.regNr.compareTo(b.regNr));
+
+    if (context.mounted) {
+      // ignore: use_build_context_synchronously
+      Person? currentPerson = context.read<AuthService>().currentPerson;
+
+      // TODO Ersätt med bättre relationer mellan Vehicle och Person
+      items = items
+          .where((element) => element.personId == currentPerson!.id)
+          .toList();
+    } else {
+      items = List.empty();
+    }
+
+    return items;
   }
 
   @override
@@ -125,19 +140,26 @@ class _ParkingStartDialogState extends State<ParkingStartDialog> {
                     future: getAllVehicles(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        _selectedVehicleId = snapshot.data!.first.id;
-                        return DropdownMenu(
-                          initialSelection: snapshot.data!.first,
-                          dropdownMenuEntries: snapshot.data!
-                              .map<DropdownMenuEntry<Vehicle>>(
-                                  (Vehicle vehicle) {
-                            return DropdownMenuEntry<Vehicle>(
-                                value: vehicle, label: vehicle.regNr);
-                          }).toList(),
-                          onSelected: (value) {
-                            _selectedVehicleId = value!.id;
-                          },
-                        );
+                        if (snapshot.data!.isNotEmpty) {
+                          _selectedVehicleId = snapshot.data!.first.id;
+                          return DropdownMenu(
+                            initialSelection: snapshot.data!.first,
+                            dropdownMenuEntries: snapshot.data!
+                                .map<DropdownMenuEntry<Vehicle>>(
+                                    (Vehicle vehicle) {
+                              return DropdownMenuEntry<Vehicle>(
+                                  value: vehicle, label: vehicle.regNr);
+                            }).toList(),
+                            onSelected: (value) {
+                              _selectedVehicleId = value!.id;
+                            },
+                          );
+                        } else {
+                          return Text(
+                            '(fordon saknas)',
+                            style: TextStyle(color: Colors.red),
+                          );
+                        }
                       }
 
                       if (snapshot.hasError) {

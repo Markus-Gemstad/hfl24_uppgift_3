@@ -72,7 +72,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
               return SizedBox.expand(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Text('Finns ingen historik.'),
+                  child: Column(
+                    children: [
+                      Text('Finns ingen historik.'),
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              allParkings = getAllParkings(context);
+                            });
+                          },
+                          child: Text('Uppdatera'))
+                    ],
+                  ),
                 ),
               );
             }

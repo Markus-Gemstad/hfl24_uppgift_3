@@ -78,6 +78,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       : 'Ange ett giltigt namn.',
                   onFieldSubmitted: (_) => savePerson(context),
                   autovalidateMode: AutovalidateMode.onUserInteraction,
+                  autofocus: true,
                   onSaved: (newValue) => _name = newValue,
                   decoration: const InputDecoration(
                       border: UnderlineInputBorder(), labelText: 'Namn'),
