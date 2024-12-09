@@ -152,7 +152,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               ],
             ),
           ),
-          SizedBox(width: 20),
+          VerticalDivider(
+            width: 40,
+          ),
+          //SizedBox(width: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

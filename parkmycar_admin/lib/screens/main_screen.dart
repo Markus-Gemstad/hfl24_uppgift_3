@@ -39,7 +39,9 @@ class _MainScreenState extends State<MainScreen> {
     final screens = <Widget>[
       ParkingSpaceScreen(),
       StatisticsScreen(),
-      AccountScreen(),
+      AccountScreen(
+        verticalAlign: MainAxisAlignment.start,
+      ),
       LogoutScreen(),
     ];
 

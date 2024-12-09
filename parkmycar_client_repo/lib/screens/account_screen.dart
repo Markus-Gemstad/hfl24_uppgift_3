@@ -5,10 +5,15 @@ import 'package:parkmycar_shared/parkmycar_shared.dart';
 import 'package:provider/provider.dart';
 
 class AccountScreen extends StatefulWidget {
-  const AccountScreen({super.key, this.isEditMode = true, this.doPop = false});
+  const AccountScreen(
+      {super.key,
+      this.isEditMode = true,
+      this.doPop = false,
+      this.verticalAlign = MainAxisAlignment.center});
 
   final bool isEditMode;
   final bool doPop;
+  final MainAxisAlignment verticalAlign;
 
   @override
   State<AccountScreen> createState() => _AccountScreenState();
@@ -55,13 +60,15 @@ class _AccountScreenState extends State<AccountScreen> {
     String title = (widget.isEditMode) ? 'Redigera konto' : 'Skapa konto';
 
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.all(12.0),
-        child: Center(
+      body: Align(
+        alignment: Alignment.center,
+        child: Container(
+          padding: EdgeInsets.all(12.0),
+          constraints: const BoxConstraints(maxWidth: 600),
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: widget.verticalAlign,
               children: [
                 Text(title, style: Theme.of(context).textTheme.headlineSmall),
                 TextFormField(
@@ -117,40 +124,43 @@ class _AccountScreenState extends State<AccountScreen> {
                     ),
                   ],
                 ),
-                Text('Byt tema',
-                    style: Theme.of(context).textTheme.headlineSmall),
-                SizedBox(height: 10),
-                SegmentedButton<ThemeMode>(
-                  segments: [
-                    ButtonSegment<ThemeMode>(
-                      value: ThemeMode.light,
-                      icon: Icon(Icons.light_mode),
-                      label: Text('Ljust'),
-                    ),
-                    ButtonSegment<ThemeMode>(
-                      value: ThemeMode.dark,
-                      icon: Icon(Icons.dark_mode),
-                      label: Text('Mörkt'),
-                    ),
-                    ButtonSegment<ThemeMode>(
-                      value: ThemeMode.system,
-                      icon: Icon(Icons.auto_mode),
-                      label: Text('Auto'),
-                    ),
-                  ],
-                  selected: <ThemeMode>{
-                    Provider.of<ThemeService>(context).themeMode
-                  },
-                  onSelectionChanged: (p0) {
-                    Provider.of<ThemeService>(context, listen: false)
-                        .changeThemeMode(p0.first);
-                  },
+                Visibility(
+                  visible: widget.isEditMode,
+                  child: Column(
+                    children: [
+                      SizedBox(height: 20),
+                      Text('Byt tema',
+                          style: Theme.of(context).textTheme.headlineSmall),
+                      SizedBox(height: 10),
+                      SegmentedButton<ThemeMode>(
+                        segments: [
+                          ButtonSegment<ThemeMode>(
+                            value: ThemeMode.light,
+                            icon: Icon(Icons.light_mode),
+                            label: Text('Ljust'),
+                          ),
+                          ButtonSegment<ThemeMode>(
+                            value: ThemeMode.dark,
+                            icon: Icon(Icons.dark_mode),
+                            label: Text('Mörkt'),
+                          ),
+                          ButtonSegment<ThemeMode>(
+                            value: ThemeMode.system,
+                            icon: Icon(Icons.auto_mode),
+                            label: Text('Auto'),
+                          ),
+                        ],
+                        selected: <ThemeMode>{
+                          Provider.of<ThemeService>(context).themeMode
+                        },
+                        onSelectionChanged: (p0) {
+                          Provider.of<ThemeService>(context, listen: false)
+                              .changeThemeMode(p0.first);
+                        },
+                      ),
+                    ],
+                  ),
                 )
-                // Switch(
-                //   value: true,
-                //   onChanged: Provider.of<ThemeService>(context)
-                //       .changeThemeMode(ThemeMode.dark),
-                // ),
               ],
             ),
           ),
