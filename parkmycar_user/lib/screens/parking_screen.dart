@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:parkmycar_client_repo/parkmycar_client_stuff.dart';
-import 'package:parkmycar_client_repo/parkmycar_http_repo.dart';
+import 'package:parkmycar_client_shared/parkmycar_client_stuff.dart';
+import 'package:parkmycar_client_shared/parkmycar_http_repo.dart';
 import 'package:parkmycar_shared/parkmycar_shared.dart';
 
 import '../globals.dart';

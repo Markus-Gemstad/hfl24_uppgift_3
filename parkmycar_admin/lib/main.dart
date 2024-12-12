@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:parkmycar_client_repo/parkmycar_client_stuff.dart';
+import 'package:parkmycar_client_shared/parkmycar_client_stuff.dart';
 
 import 'screens/main_screen.dart';
 

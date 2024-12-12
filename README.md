@@ -67,5 +67,3 @@ En parkeringsapp med tillhörande server-api (webservices) och admin-gui.
 - Skulle velat lägga till ett sätt att förlänga en parkeringstid som gått ut men hann inte. Men det visas iaf en röd text när tiden gått ut :-)
 
 - Statistiksidan är inte vacker men den gör det den ska.
-
-- parkmycar_client_repo skulle behöva byta namn då den innehåller mer delad klientfunktionalitet än repos.

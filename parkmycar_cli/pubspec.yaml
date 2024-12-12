@@ -14,8 +14,8 @@ dependencies:
   # path: ^1.8.0
   parkmycar_shared:
     path: '../parkmycar_shared'
-  parkmycar_client_repo:
-    path: '../parkmycar_client_repo'
+  parkmycar_client_shared:
+    path: '../parkmycar_client_shared'
 
 dev_dependencies:
   lints: ^4.0.0

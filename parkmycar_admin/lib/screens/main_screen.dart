@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:parkmycar_client_repo/parkmycar_client_stuff.dart';
+import 'package:parkmycar_client_shared/parkmycar_client_stuff.dart';
 
 import 'parking_space_screen.dart';
 import 'statistics_screen.dart';

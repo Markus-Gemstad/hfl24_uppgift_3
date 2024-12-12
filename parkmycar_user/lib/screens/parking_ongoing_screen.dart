@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:parkmycar_client_repo/parkmycar_client_stuff.dart';
+import 'package:parkmycar_client_shared/parkmycar_client_stuff.dart';
 
 import 'package:parkmycar_user/globals.dart';
 

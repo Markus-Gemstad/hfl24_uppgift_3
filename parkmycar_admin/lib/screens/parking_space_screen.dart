@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parkmycar_admin/screens/parking_space_edit_dialog.dart';
-import 'package:parkmycar_client_repo/parkmycar_http_repo.dart';
+import 'package:parkmycar_client_shared/parkmycar_http_repo.dart';
 import 'package:parkmycar_shared/parkmycar_shared.dart';
 
 import '../globals.dart';

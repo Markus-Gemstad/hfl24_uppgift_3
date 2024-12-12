@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:parkmycar_cli/models/menu.dart';
 import 'package:parkmycar_cli/screens/screen_util.dart';
-import 'package:parkmycar_client_repo/parkmycar_http_repo.dart';
+import 'package:parkmycar_client_shared/parkmycar_http_repo.dart';
 import 'package:parkmycar_shared/parkmycar_shared.dart';
 
 void main() async {
